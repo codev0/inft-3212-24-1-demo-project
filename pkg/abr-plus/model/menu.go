@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 )
@@ -50,7 +51,7 @@ func (m MenuModel) Get(id int) (*Menu, error) {
 	row := m.DB.QueryRowContext(ctx, query, id)
 	err := row.Scan(&menu.Id, &menu.CreatedAt, &menu.UpdatedAt, &menu.Title, &menu.Description, &menu.NutritionValue)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cannot retrive menu with id: %v, %w", id, err)
 	}
 	return &menu, nil
 }

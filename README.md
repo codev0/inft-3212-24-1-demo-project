@@ -3,6 +3,8 @@
 
 ## Restaurants REST API
 ```
+# list of all menu items
+GET /menus
 POST /menus
 GET /menus/:id
 PUT /menus/:id

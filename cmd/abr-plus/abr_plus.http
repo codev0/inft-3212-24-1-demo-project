@@ -3,14 +3,14 @@ POST localhost:8081/api/v1/menus
 Content-Type: application/json
 
 {
-  "title": "Fried Chicken",
+  "title": "Fried Chicken 2",
   "description": "Menu 1 description",
   "nutritionValue": 100
 }
 
 > {%
     client.test("Request executed successfully", function() {
-        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.status === 201, "Response status is not 200");
     });
 %}
 
@@ -28,7 +28,7 @@ PUT localhost:8081/api/v1/menus/1
 Content-Type: application/json
 
 {
-  "nutritionValue": 100
+  "nutritionValue": 400
 }
 
 > {%
@@ -38,7 +38,7 @@ Content-Type: application/json
 %}
 
 ### Delete Menu Item
-DELETE localhost:8081/api/v1/menus/1
+DELETE localhost:8081/api/v1/menus/2
 Content-Type: application/json
 
 > {%

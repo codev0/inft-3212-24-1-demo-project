@@ -1,9 +1,6 @@
 // Use DBML to define your database structure
 // Docs: https://dbml.dbdiagram.io/docs
 
-// Use DBML to define your database structure
-// Docs: https://dbml.dbdiagram.io/docs
-
 Table restaurants {
   id bigserial [primary key]
   created_at timestamp

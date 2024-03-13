@@ -1,11 +1,15 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
-	"github.com/codev0/inft3212-6/pkg/abr-plus/model"
-	"github.com/gorilla/mux"
+	"errors"
+	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/codev0/inft3212-6/pkg/abr-plus/model"
+	"github.com/gorilla/mux"
 )
 
 func (app *application) respondWithError(w http.ResponseWriter, code int, message string) {
@@ -34,6 +38,7 @@ func (app *application) createMenuHandler(w http.ResponseWriter, r *http.Request
 
 	err := app.readJSON(w, r, &input)
 	if err != nil {
+		log.Println(err)
 		app.respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
@@ -65,6 +70,9 @@ func (app *application) getMenuHandler(w http.ResponseWriter, r *http.Request) {
 
 	menu, err := app.models.Menus.Get(id)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			log.Printf("Menu with ID %d not found\n", id)
+		}
 		app.respondWithError(w, http.StatusNotFound, "404 Not Found")
 		return
 	}
