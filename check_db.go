@@ -9,7 +9,9 @@ import (
 )
 
 func main() {
-	// For windows use postgresql:// instead of postgres:// in the connection string first part
+	// DSN string anatomy
+	// Linux/Mac: postgres://username:password@host:port/database?sslmode=disable
+	// Windows: postgresql://username:password@host:port/database?sslmode=disable
 	db, err := sql.Open("postgres", "postgres://codev0:pa55word@localhost:5432/lecture6?sslmode=disable")
 	if err != nil {
 		log.Fatal(err)
