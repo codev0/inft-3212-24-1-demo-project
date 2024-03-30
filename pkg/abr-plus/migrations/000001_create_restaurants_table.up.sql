@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS restaurants
     cousine     text                        NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS menu
+CREATE TABLE IF NOT EXISTS menus
 (
     id              bigserial PRIMARY KEY,
     created_at      timestamp(0) with time zone NOT NULL DEFAULT NOW(),
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS menu
     nutrition_value int
 );
 
-CREATE TABLE IF NOT EXISTS restaurants_and_menu
+CREATE TABLE IF NOT EXISTS restaurants_and_menus
 (
     "id"         bigserial PRIMARY KEY,
     "created_at" timestamp(0) with time zone NOT NULL DEFAULT NOW(),
@@ -30,5 +30,5 @@ CREATE TABLE IF NOT EXISTS restaurants_and_menu
     FOREIGN KEY (restaurant)
         REFERENCES restaurants(id),
     FOREIGN KEY (menu)
-        REFERENCES menu(id)
+        REFERENCES menus(id)
 );
