@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	"github.com/codev0/inft3212-6/pkg/abr-plus/validator"
 )
 
 type Menu struct {
@@ -94,11 +96,11 @@ func (m MenuModel) Update(menu *Menu) error {
 	// Update a specific menu item in the database.
 	query := `
 		UPDATE menus
-		SET title = $1, description = $2, nutrition_value = $3
-		WHERE id = $4
+		SET title = $1, description = $2, nutrition_value = $3, updated_at = CURRENT_TIMESTAMP
+		WHERE id = $4 AND updated_at = $5
 		RETURNING updated_at
 		`
-	args := []interface{}{menu.Title, menu.Description, menu.NutritionValue, menu.Id}
+	args := []interface{}{menu.Title, menu.Description, menu.NutritionValue, menu.Id, menu.UpdatedAt}
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -121,4 +123,15 @@ func (m MenuModel) Delete(id int) error {
 
 	_, err := m.DB.ExecContext(ctx, query, id)
 	return err
+}
+
+func ValidateMenu(v *validator.Validator, menu *Menu) {
+	// Check if the title field is empty.
+	v.Check(menu.Title != "", "title", "must be provided")
+	// Check if the title field is not more than 100 characters.
+	v.Check(len(menu.Title) <= 100, "title", "must not be more than 100 bytes long")
+	// Check if the description field is not more than 1000 characters.
+	v.Check(len(menu.Description) <= 1000, "description", "must not be more than 1000 bytes long")
+	// Check if the nutrition value is not more than 10000.
+	v.Check(menu.NutritionValue <= 10000, "nutritionValue", "must not be more than 10000")
 }
