@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/codev0/inft3212-6/pkg/abr-plus/model"
+	"github.com/codev0/inft3212-6/pkg/abr-plus/validator"
 )
 
 func (app *application) createMenuHandler(w http.ResponseWriter, r *http.Request) {
@@ -109,6 +110,13 @@ func (app *application) updateMenuHandler(w http.ResponseWriter, r *http.Request
 
 	if input.NutritionValue != nil {
 		menu.NutritionValue = *input.NutritionValue
+	}
+
+	v := validator.New()
+
+	if model.ValidateMenu(v, menu); !v.Valid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
 	}
 
 	err = app.models.Menus.Update(menu)
