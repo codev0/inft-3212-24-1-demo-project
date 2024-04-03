@@ -161,7 +161,7 @@ func (app *application) readJSON(w http.ResponseWriter, r *http.Request, dst int
 	return nil
 }
 
-// readString is a helper method on application type that returns a string value from the URL query
+// readStrings is a helper method on application type that returns a string value from the URL query
 // string, or the provided default value if no matching key is found.
 func (app *application) readStrings(qs url.Values, key string, defaultValue string) string {
 	// Extract the value for a given key from the URL query string.

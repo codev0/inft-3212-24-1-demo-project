@@ -25,34 +25,71 @@ type MenuModel struct {
 	ErrorLog *log.Logger
 }
 
-func (m MenuModel) GetAll() ([]*Menu, error) {
+func (m MenuModel) GetAll(title string, from, to int, filters Filters) ([]*Menu, Metadata, error) {
+
 	// Retrieve all menu items from the database.
-	query := `
-		SELECT id, created_at, updated_at, title, description, nutrition_value
-		FROM menus
+	query := fmt.Sprintf(
 		`
+		SELECT count(*) OVER(), id, created_at, updated_at, title, description, nutrition_value
+		FROM menus
+		WHERE (LOWER(title) = LOWER($1) OR $1 = '')
+		AND (nutrition_value >= $2 OR $2 = 0)
+		AND (nutrition_value <= $3 OR $3 = 0)
+		ORDER BY %s %s, id ASC
+		LIMIT $4 OFFSET $5
+		`,
+		filters.sortColumn(), filters.sortDirection())
+
+	// Create a context with a 3-second timeout.
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	rows, err := m.DB.QueryContext(ctx, query)
+	// Organize our four placeholder parameter values in a slice.
+	args := []interface{}{title, from, to, filters.limit(), filters.offset()}
+
+	// log.Println(query, title, from, to, filters.limit(), filters.offset())
+	// Use QueryContext to execute the query. This returns a sql.Rows result set containing
+	// the result.
+	rows, err := m.DB.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, err
+		return nil, Metadata{}, err
 	}
-	defer rows.Close()
+
+	// Importantly, defer a call to rows.Close() to ensure that the result set is closed
+	// before GetAll returns.
+	defer func() {
+		if err := rows.Close(); err != nil {
+			m.ErrorLog.Println(err)
+		}
+	}()
+
+	// Declare a totalRecords variable
+	totalRecords := 0
 
 	var menus []*Menu
 	for rows.Next() {
 		var menu Menu
-		err := rows.Scan(&menu.Id, &menu.CreatedAt, &menu.UpdatedAt, &menu.Title, &menu.Description, &menu.NutritionValue)
+		err := rows.Scan(&totalRecords, &menu.Id, &menu.CreatedAt, &menu.UpdatedAt, &menu.Title, &menu.Description, &menu.NutritionValue)
 		if err != nil {
-			return nil, err
+			return nil, Metadata{}, err
 		}
+
+		// Add the Movie struct to the slice
 		menus = append(menus, &menu)
 	}
+
+	// When the rows.Next() loop has finished, call rows.Err() to retrieve any error
+	// that was encountered during the iteration.
 	if err = rows.Err(); err != nil {
-		return nil, err
+		return nil, Metadata{}, err
 	}
-	return menus, nil
+
+	// Generate a Metadata struct, passing in the total record count and pagination parameters
+	// from the client.
+	metadata := calculateMetadata(totalRecords, filters.Page, filters.PageSize)
+
+	// If everything went OK, then return the slice of the movies and metadata.
+	return menus, metadata, nil
 }
 
 func (m MenuModel) Insert(menu *Menu) error {
