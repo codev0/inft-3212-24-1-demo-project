@@ -8,8 +8,14 @@ import (
 
 	"github.com/codev0/inft3212-6/pkg/abr-plus/model"
 	"github.com/codev0/inft3212-6/pkg/jsonlog"
+	"github.com/codev0/inft3212-6/pkg/vcs"
 
 	_ "github.com/lib/pq"
+)
+
+// Set version of application corresponding to value of vcs.Version.
+var (
+	version = vcs.Version()
 )
 
 type config struct {
