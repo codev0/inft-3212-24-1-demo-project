@@ -1,5 +1,13 @@
 # Restaurants project
 
+#### Add write menus permission to user example SQL 
+```sql
+-- Add write menus permission to user with id 1
+INSERT INTO users_permissions
+SELECT 1, permissions.id
+FROM permissions
+WHERE permissions.code = 'menus:write';
+```
 
 ## Restaurants REST API
 ```
