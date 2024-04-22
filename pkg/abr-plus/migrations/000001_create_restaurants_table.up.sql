@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS menus
     nutrition_value int
 );
 
-CREATE TABLE IF NOT EXISTS restaurants_and_menus
+CREATE TABLE IF NOT EXISTS restaurants_menus
 (
     "id"         bigserial PRIMARY KEY,
     "created_at" timestamp(0) with time zone NOT NULL DEFAULT NOW(),
