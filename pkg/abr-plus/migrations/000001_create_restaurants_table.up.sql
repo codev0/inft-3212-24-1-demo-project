@@ -28,7 +28,9 @@ CREATE TABLE IF NOT EXISTS restaurants_menus
     "restaurant" bigserial,
     "menu"       bigserial,
     FOREIGN KEY (restaurant)
-        REFERENCES restaurants(id),
+        REFERENCES restaurants(id)
+        ON DELETE CASCADE,
     FOREIGN KEY (menu)
         REFERENCES menus(id)
+        ON DELETE CASCADE
 );
