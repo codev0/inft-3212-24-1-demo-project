@@ -1,0 +1,48 @@
+# Explanation
+# Version: Specifies which version of the Docker Compose file format is being used.
+# Services: This section defines the containers that need to be created.
+
+# app:
+# build: Points to the Dockerfile in the current directory that will be used to build the image of the Golang app.
+# ports: Maps port 8080 on the host to port 8080 on the container, allowing external access to the Go application.
+# depends_on: Ensures that the db service is started before the app service.
+# environment: Defines environment variables used by the Go application to connect to the PostgreSQL database.
+
+# db:
+# image: Uses the official PostgreSQL image.
+# environment: Sets environment variables that configure the default database name, user, and password.
+# ports: Maps port 5432 on the host to port 5432 on the container to allow direct database access.
+# volumes: Maps a named volume pgdata for persistent storage of database data.
+# Volumes: Defines persistent data volumes used by the services. In this case, pgdata is used to persist PostgreSQL data.
+
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      PORT: ${APP_PORT}
+      ENV: ${APP_ENV}
+      FILL: ${APP_FILL}
+      MIGRATIONS: ${APP_MIGRATIONS}
+      DSN: ${APP_DSN}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5430:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
