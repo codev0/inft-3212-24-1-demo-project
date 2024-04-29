@@ -32,6 +32,16 @@ env POSTGRES_PASSWORD="STRONG_PASSWORD" APP_DSN="postgres://postgres:postgres@db
 
 `env POSTGRES_PASSWORD="postgres"` this command adds envoirment variable then available in docker compose.
 
+`APP_DSN` contains connection string to the dockerezed postgres.
+
+❗IMPORTANT: Host value in DSN must have name of service from docker-compose. In our case hostname is `db`. 
+
+Also, port have to be right side value after semicolon, it's a port of service available in docker isolated network, the left port for access from outside (host OS). In our case:
+`"5433:5432"` port `5432` for docker isolated network.
+
+Overall, your DSN for docker should be like this:
+`postgres://postgres:postgres@db:5432/example?sslmode=disable`.
+
 `--build` flag force docker compose to rebuild app. For example, if you have changed source code, you need this flag.
 
 #### Add write menus permission to user example SQL
