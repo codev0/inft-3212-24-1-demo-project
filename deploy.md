@@ -47,5 +47,6 @@ There are two ways how to deploy Golang apps to DO. Despite the way you choose, 
 1. Review everything, then submit. ![alt text](docs/images/app-review.png)
 1. Wait for building.
    ![alt text](docs/images/app-activity.png)
+1. Check given URL with your params, https://dolphin-app-qdx7b.ondigitalocean.app/api/v1/healthcheck.
 1. Hooray! 🎉
 ![alt text](docs/images/app-done.png)
