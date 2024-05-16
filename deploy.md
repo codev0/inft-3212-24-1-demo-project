@@ -50,3 +50,92 @@ There are two ways how to deploy Golang apps to DO. Despite the way you choose, 
 1. Check given URL with your params, https://dolphin-app-qdx7b.ondigitalocean.app/api/v1/healthcheck.
 1. Hooray! 🎉
 ![alt text](docs/images/app-done.png)
+
+## Run binary in background (Optional)
+
+### Configure as a System Service
+For a more robust setup, especially for production environments, you might want to configure your application to run as a system service using systemd. Here’s how you can do it:
+
+1. Create a systemd service file:
+
+```bash
+sudo nano /etc/systemd/system/your_service_name.service
+```
+
+2. Add the following configuration to the file:
+
+```ini
+[Unit]
+Description=Go Application Service
+After=network.target
+
+[Service]
+User=username
+Group=usergroup
+ExecStart=/path/to/directory/binary_name
+EnvironmentFile=/path/to/directory/.env
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Replace `your_service_name` with a name for your service, `username` and `usergroup` with the user and group under which the service should run, and adjust the `ExecStart` path to point to your binary.
+
+In our case it should look like this.
+```ini
+User=root
+Group=root
+ExecStart=/root/binary_name
+ExecStart=/root/.env
+```
+
+Don't forget to create `.env` file with proper values.
+```bash
+touch .env
+nano .env
+```
+`.env` example
+```
+DSN=path_to_DSN
+PORT=8080
+```
+
+3. Reload systemd to read the new service file:
+
+Add `sudo` if user is not `root`.
+
+```bash
+systemctl daemon-reload
+```
+
+4. Start the service:
+
+```bash
+systemctl start your_service_name.service
+```
+
+5. Enable the service to start on boot:
+
+```bash
+systemctl enable your_service_name.service
+```
+
+6. Check the status of your service:
+
+```bash
+systemctl status your_service_name.service
+```
+
+This will ensure that your Go application starts automatically at boot and restarts if it ever crashes.
+
+### Step 5: Monitor and Maintain
+Ensure to monitor the application logs and system performance. You can check logs of a systemd service with:
+
+```bash
+journalctl -u your_service_name.service
+```
+
+This setup provides a basic foundation for running a Go application on a server, ensuring it's secure, stable, and restarts automatically if needed.
+
+Thanks for ChatGPT 🤖 for base instruction that I have modified a bit. :)
